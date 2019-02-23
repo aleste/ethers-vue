@@ -20,6 +20,7 @@
       <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
     </ul>
     <h3>Ecosystem</h3>
+    <h1>USUARIO: {{ user }}</h1>
     <ul>
       <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
       <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
@@ -31,11 +32,51 @@
 </template>
 
 <script>
+
+import { mapGetters, mapActions } from 'vuex'
+import {
+  getProvider,
+  getWallet,
+  getWalletAddress,
+  Contract
+} from '../store/ethers/ethersConnect';
+
+import helloContract from '../../build/contracts/HelloWorld.json'
+
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
-  }
+  },
+  async mounted() {
+    const wallet = await getWallet()
+    const walletAddress = await getWalletAddress()
+console.log('wallet', wallet)
+console.log('walletAddress', walletAddress)
+
+    const provider = await getProvider()
+    console.log('provider', provider)
+   // const c = new Contract('0x75840F2926c93b20852346E9E7a7143D08AE1b7e', helloContract.abi, provider)
+
+     const c = new Contract('0x70f5320D48aC098C9B33105442EcF7f8c2044d73', helloContract.abi, wallet)
+    console.log('contract', c)
+
+    const enviaMsg = await c.setName("Hola")
+    console.log('enviaMsg', enviaMsg)
+
+    const mensaje = await c.getMessage()
+    console.log('getMensaje', mensaje)
+  },
+  methods: {
+    //...mapActions({
+    //  getProvider: 'ethers/getProvider'
+    //})
+  },
+  computed: {
+    ...mapGetters({
+      user: 'ethers/userInfo'
+    })
+}
 }
 </script>
 
