@@ -38,10 +38,11 @@ import {
   getProvider,
   getWallet,
   getWalletAddress,
-  Contract
+  Contract,
+  utils
 } from '../store/ethers/ethersConnect';
 
-import helloContract from '../../build/contracts/HelloWorld.json'
+import helloContract from '../../build/contracts/NotarizeArba.json'
 
 export default {
   name: 'HelloWorld',
@@ -49,23 +50,39 @@ export default {
     msg: String
   },
   async mounted() {
+
     const wallet = await getWallet()
+    if(!wallet){
+      console.log('Error no hay billetera')
+    }
     const walletAddress = await getWalletAddress()
 console.log('wallet', wallet)
 console.log('walletAddress', walletAddress)
 
-    const provider = await getProvider()
-    console.log('provider', provider)
+  const provider = await getProvider()
+
+  console.log('quien es el provider:', provider)
+
+const balance = await provider.getBalance(walletAddress)
+ let etherString = utils.formatEther(balance);
+  console.log('Balance', etherString)
+   // console.log('provider', provider)
    // const c = new Contract('0x75840F2926c93b20852346E9E7a7143D08AE1b7e', helloContract.abi, provider)
 
-     const c = new Contract('0x70f5320D48aC098C9B33105442EcF7f8c2044d73', helloContract.abi, wallet)
-    console.log('contract', c)
+     const c = new Contract('0x70f5320D48aC098C9B33105442EcF7f8c2044d73', helloContract.abi, provider)
+     console.log(c)
+    //const d = await c.getDocument(0)
+    //console.log(d)
+    //console.log('contract', c)
+//['0x5805039B783ab293FdcFcD3E561ee62Eda40f38E'], dateString, inputAsunto, inputDesc, inputHash)
+   console.log('notarizando...')
+   const newDoc = await c.newNotarize(['0x75840F2926c93b20852346E9E7a7143D08AE1b7e'], '10-12-2019', 'asunto', 'texto', 'hashComplicado', 0)
+   console.log(newDoc)
+   // let receipt = await newDoc.wait(2)
+    //console.log('enviaMsg', receipt)
 
-    const enviaMsg = await c.setName("Hola")
-    console.log('enviaMsg', enviaMsg)
-
-    const mensaje = await c.getMessage()
-    console.log('getMensaje', mensaje)
+//    const mensaje = await c.getMessage()
+  //  console.log('getMensaje', mensaje)
   },
   methods: {
     //...mapActions({

@@ -82,7 +82,7 @@ export async function getNetName() {
       return 'Rinkeby';
     case '42':
       return 'Kovan';
-      case '5777':
+    case '5777':
       return 'Ganache';
       // if you give your ganache an id your can detect it here if you want
     default:
